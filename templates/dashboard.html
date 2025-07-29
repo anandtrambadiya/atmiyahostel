@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assemblies Dashboard</title>
+</head>
+<body>
+    <h1>Assemblies</h1>
+    
+    <p><a href="{{ url_for('main.create_assembly') }}">+ Add New Assembly</a></p>
+    
+    <h2>Active Assemblies</h2>
+<ul>
+{% for assembly in active_assemblies %}
+    <li>
+        <strong>{{ assembly.title }}</strong> ({{ assembly.date.strftime('%Y-%m-%d') }})
+        {% if assembly.speaker %} - Speaker: {{ assembly.speaker }}{% endif %}
+        {% if assembly.date >= cutoff_date %}
+            | <a href="{{ url_for('main.take_attendance', assembly_id=assembly.id) }}">Take Attendance</a>
+        {% else %}
+            | Attendance Closed
+        {% endif %}
+    </li>
+{% else %}
+    <li>No active assemblies.</li>
+{% endfor %}
+</ul>
+
+<h2>Past Assemblies</h2>
+<ul>
+{% for assembly in past_assemblies %}
+    <li>
+        <strong>{{ assembly.title }}</strong> ({{ assembly.date.strftime('%Y-%m-%d') }})
+        {% if assembly.speaker %} - Speaker: {{ assembly.speaker }}{% endif %}
+        | Attendance Closed
+    </li>
+{% else %}
+    <li>No past assemblies.</li>
+{% endfor %}
+</ul>
+
+
+    <p><a href="{{ url_for('main.logout') }}">Logout</a></p>
+</body>
+</html>

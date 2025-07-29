@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Take Attendance - {{ assembly.title }}</title>
+    <style>
+        /* Basic styling for hostel filter buttons */
+        .hostel-filter-btn {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 5px 12px;
+            margin-right: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .hostel-filter-btn.active {
+            background-color: #007BFF;
+            color: white;
+            cursor: default;
+        }
+        /* Simple table styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        /* Container for filter controls */
+        .filters {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Attendance for "{{ assembly.title }}" ({{ assembly.date.strftime('%Y-%m-%d') }})</h1>
+
+    <!-- Filter form: GET method for filters -->
+    <form method="get" action="{{ url_for('main.take_attendance', assembly_id=assembly.id) }}">
+        <div class="filters">
+            <label for="room_no">Search Room No:</label>
+            <input id="room_no" name="room_no" type="text" value="{{ room_search }}" placeholder="Enter room number" autofocus>
+            <input type="hidden" id="hostel_filter_input" name="hostel_filter" value="{{ selected_hostel }}">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Hostel filter buttons below the search -->
+    <div>
+        {% for hostel in hostel_options %}
+            {% if hostel == selected_hostel %}
+                <button class="hostel-filter-btn active" disabled>{{ hostel }}</button>
+            {% else %}
+                <button class="hostel-filter-btn" onclick="selectHostel('{{ hostel }}')">{{ hostel }}</button>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Attendance Form (POST) -->
+    <form method="POST" action="{{ url_for('main.take_attendance', assembly_id=assembly.id, hostel_filter=selected_hostel, room_no=room_search) }}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hostel</th>
+                    <th>Room No</th>
+                    <th>Name</th>
+                    <th>Present</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if students %}
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.hostel }}</td>
+                        <td>{{ student.room_no }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>
+                            <input type="checkbox" name="{{ student.id }}" {% if attendance.get(student.id) %}checked{% endif %}>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">No students found for selected filters.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <br>
+        <button type="submit">Save Attendance</button>
+    </form>
+
+    <p><a href="{{ url_for('main.dashboard') }}">Back to Dashboard</a></p>
+
+    <script>
+        function selectHostel(hostel) {
+            document.getElementById('hostel_filter_input').value = hostel;
+            // Submit filter form (GET) to update results
+            // We submit the first form because filters and search are part of one GET form
+            document.querySelector('form').submit();
+        }
+    </script>
+</body>
+</html>

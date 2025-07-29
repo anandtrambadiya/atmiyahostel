@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Assembly</title>
+</head>
+<body>
+    <h1>Create New Assembly</h1>
+    
+    <form method="post">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+        
+        <label for="date">Date:</label><br>
+        <input type="date" id="date" name="date" min="{{ current_date }}" required><br><br>
+        
+        <label for="speaker">Speaker (optional):</label><br>
+        <input type="text" id="speaker" name="speaker"><br><br>
+        
+        <button type="submit">Create Assembly</button>
+    </form>
+
+    <p><a href="{{ url_for('main.dashboard') }}">Back to Assemblies</a></p>
+</body>
+</html>
